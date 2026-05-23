@@ -2,6 +2,31 @@ import { useState } from "react";
 import { LessonProject, FontSize } from "../types";
 import { BookOpen, Award, Layers, HelpCircle, Puzzle, Heart, Printer, Copy, CheckCircle2, RefreshCw, Eye, Sparkles, Download, FileText } from "lucide-react";
 
+const prepareSvgForExport = (svgString: string, targetWidth: number = 550): string => {
+  let width = targetWidth;
+  let height = Math.round(targetWidth * 0.5); // Default 2:1 ratio
+  
+  const viewBoxMatch = svgString.match(/viewBox=["']\s*([0-9.-]+)\s+([0-9.-]+)\s+([0-9.-]+)\s+([0-9.-]+)\s*["']/i);
+  if (viewBoxMatch && viewBoxMatch[3] && viewBoxMatch[4]) {
+    const vbW = parseFloat(viewBoxMatch[3]);
+    const vbH = parseFloat(viewBoxMatch[4]);
+    if (vbW > 0) {
+      height = Math.round((vbH / vbW) * targetWidth);
+    }
+  }
+
+  let cleaned = svgString;
+  cleaned = cleaned.replace(/\s+width=["'][^"']*["']/gi, "");
+  cleaned = cleaned.replace(/\s+height=["'][^"']*["']/gi, "");
+  cleaned = cleaned.replace(/<svg/i, `<svg width="${width}" height="${height}"`);
+  
+  if (!cleaned.includes("xmlns=")) {
+    cleaned = cleaned.replace(/<svg/i, '<svg xmlns="http://www.w3.org/2000/svg"');
+  }
+  
+  return cleaned;
+};
+
 interface Props {
   project: LessonProject;
   fontSize: FontSize;
@@ -194,8 +219,32 @@ export function A4ProjectDocument({ project, fontSize, theme }: Props) {
       `;
     });
 
+    // Section 4: Visual Blueprint & Diagrams (चित्र व आरेख)
+    if (project.diagrams && project.diagrams.length > 0) {
+      htmlContent += `<h2>4. Visual Blueprint & Diagrams (चित्र व आरेख)</h2>`;
+      project.diagrams.forEach((diag, index) => {
+        const processedSvg = prepareSvgForExport(diag.svgSourceCode, 520);
+        htmlContent += `
+          <div class="concept-box" style="background-color: #f8fafc; text-align: center; border: 1px solid #e2e8f0; padding: 15px; margin-bottom: 20px;">
+            <strong style="color: #047857; font-size: 12pt;">Diagram ${index + 1}: ${diag.diagramTitle}</strong>
+            <p style="font-style: italic; font-size: 9.5pt; color: #475569; margin-top: 5px; margin-bottom: 15px;">
+              ${diag.descriptionOfVisual}
+            </p>
+            <div style="margin: 15px auto; display: block; text-align: center;">
+              ${processedSvg}
+            </div>
+            ${diag.editorTipsForWord ? `
+              <div class="hint-box" style="border-left: 3px solid #06b6d4; background-color: #ecfeff; font-size: 9.5pt; text-align: left; margin-top: 15px; padding: 10px;">
+                <strong>📝 Tip for student portfolio:</strong> ${diag.editorTipsForWord}
+              </div>
+            ` : ""}
+          </div>
+        `;
+      });
+    }
+
     htmlContent += `
-      <h2>4. Magical Mnemonics (याद रखने की जादुई तरकीबें)</h2>
+      <h2>5. Magical Mnemonics (याद रखने की जादुई तरकीबें)</h2>
     `;
 
     project.mnemonics.forEach((m) => {
@@ -211,12 +260,12 @@ export function A4ProjectDocument({ project, fontSize, theme }: Props) {
     });
 
     htmlContent += `
-      <h2>5. Infographic Poster Layout Guide (पोस्टर चार्ट निर्देश)</h2>
+      <h2>6. Infographic Poster Layout Guide (पोस्टर चार्ट निर्देश)</h2>
       <p style="background-color: #fef3c7; border: 1.5px solid #fde047; padding: 15px; font-style: italic;">
         ${project.beautifulInfographicText}
       </p>
 
-      <h2>6. Hand-made Printable Project Activity (करके सीखें)</h2>
+      <h2>7. Easy A4 Hand-made Project (करके सीखें: मुख्य गतिविधि)</h2>
       <div class="concept-box" style="border-left: 5px solid #047857; background-color: #fafafa;">
         <strong style="font-size: 12pt; color: #047857;">Project Task: ${project.practicalProjectActivity.projectName}</strong>
         <h4 style="margin: 10px 0 5px 0;">📦 Materials Required (आवश्यक वस्तुएं):</h4>
@@ -233,7 +282,7 @@ export function A4ProjectDocument({ project, fontSize, theme }: Props) {
         </div>
       </div>
 
-      <h2>7. Active Recall Brain Challenge (मस्तिष्क परीक्षण)</h2>
+      <h2>8. Active Recall Brain Challenge (मस्तिष्क परीक्षण)</h2>
     `;
 
     project.activeRecallQuiz.forEach((quiz, i) => {
@@ -256,7 +305,7 @@ export function A4ProjectDocument({ project, fontSize, theme }: Props) {
     });
 
     htmlContent += `
-      <h2>8. Night-Before-Exam Summary Flashcard (त्वरित पुनरावृत्ति)</h2>
+      <h2>9. Night-Before-Exam Summary Flashcard (त्वरित पुनरावृत्ति)</h2>
       <pre style="background: #0f172a; color: #f1f5f9; padding: 15px; font-family: 'Courier New', Courier, monospace; font-size: 10pt; line-height: 1.4;">${project.quickSummaryRevisionCard}</pre>
 
       <table class="signature-table">
@@ -344,9 +393,19 @@ export function A4ProjectDocument({ project, fontSize, theme }: Props) {
 
     setExportingPdf(true);
 
+    const isDark = document.documentElement.classList.contains("dark") || document.body.classList.contains("dark");
+    if (isDark) {
+      document.documentElement.classList.remove("dark");
+      document.body.classList.remove("dark");
+    }
+
     try {
       const originalEle = document.getElementById("a4-printable-area");
       if (!originalEle) {
+        if (isDark) {
+          document.documentElement.classList.add("dark");
+          document.body.classList.add("dark");
+        }
         setExportingPdf(false);
         return;
       }
@@ -383,10 +442,33 @@ export function A4ProjectDocument({ project, fontSize, theme }: Props) {
         input.parentNode?.replaceChild(span, input);
       });
 
-      // Show answered options checked, and explanations open by default for rich content
-      const quizBlocks = clonedEle.querySelectorAll(".quiz-option-btn");
-      // To improve appearance of quiz in direct PDF, let's keep it tidy
-      
+      // Find all SVG nodes in the cloned HTML and assign explicit pixel dimensions
+      // to avoid visual collapsing in html2canvas / html2pdf
+      const svgElements = clonedEle.querySelectorAll("svg");
+      svgElements.forEach((svg) => {
+        const viewBox = svg.getAttribute("viewBox");
+        if (viewBox) {
+          const parts = viewBox.trim().split(/\s+/);
+          if (parts.length === 4) {
+            const vbW = parseFloat(parts[2]);
+            const vbH = parseFloat(parts[3]);
+            if (!isNaN(vbW) && !isNaN(vbH) && vbW > 0) {
+              const targetWidth = 550;
+              const targetHeight = Math.round((vbH / vbW) * targetWidth);
+              svg.setAttribute("width", targetWidth.toString());
+              svg.setAttribute("height", targetHeight.toString());
+              svg.style.width = `${targetWidth}px`;
+              svg.style.height = `${targetHeight}px`;
+            }
+          }
+        } else {
+          svg.setAttribute("width", "550");
+          svg.setAttribute("height", "280");
+          svg.style.width = "550px";
+          svg.style.height = "280px";
+        }
+      });
+
       const container = document.createElement("div");
       container.style.position = "absolute";
       container.style.top = "-9999px";
@@ -417,6 +499,10 @@ export function A4ProjectDocument({ project, fontSize, theme }: Props) {
       // fallback
       window.print();
     } finally {
+      if (isDark) {
+        document.documentElement.classList.add("dark");
+        document.body.classList.add("dark");
+      }
       setExportingPdf(false);
     }
   };
@@ -451,6 +537,24 @@ export function A4ProjectDocument({ project, fontSize, theme }: Props) {
 
   return (
     <div className="w-full flex flex-col items-center">
+      {exportingPdf && (
+        <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-slate-950/80 backdrop-blur-md no-print">
+          <div className="text-center p-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-2xl max-w-sm w-full mx-4 flex flex-col items-center">
+            <div className="relative mb-6">
+              <div className="w-16 h-16 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin"></div>
+              <Sparkles className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-emerald-600 dark:text-emerald-400 animate-pulse" size={24} />
+            </div>
+            
+            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
+              Generating High-Quality PDF
+            </h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+              Optimizing diagram geometries, styling high-contrast fonts, and structuring A4 page breaks for school publication file...
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Action panel at top */}
       <div className="w-full max-w-4xl bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700/60 shadow-lg rounded-2xl p-4 mb-6 flex flex-wrap items-center justify-between gap-4 no-print print:hidden">
         <div className="flex items-center gap-3">

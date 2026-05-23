@@ -94,6 +94,10 @@ export default function App() {
   useEffect(() => {
     fetch("/api/presets")
       .then((res) => {
+        const contentType = res.headers.get("content-type") || "";
+        if (!contentType.includes("application/json")) {
+          throw new Error("HTML response received instead of JSON presets");
+        }
         if (res.ok) return res.json();
         throw new Error();
       })
@@ -177,6 +181,14 @@ export default function App() {
       });
 
       const [_, res] = await Promise.all([simulationPromise, responsePromise]);
+
+      const contentType = res.headers.get("content-type") || "";
+      if (!contentType.includes("application/json")) {
+        throw new Error(
+          "Received an invalid HTML/Text response from the server instead of JSON. " +
+          "If you are deployed on Vercel, please make sure you uploaded the newly configured '/api' folder to your GitHub repository and have configured your GEMINI_API_KEY under Project Settings -> Environment Variables in your Vercel Dashboard!"
+        );
+      }
 
       if (!res.ok) {
         const errorData = await res.json().catch(() => ({}));
