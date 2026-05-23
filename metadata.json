@@ -1,0 +1,6 @@
+{
+  "name": "9th Class Project Generator",
+  "description": "An award-winning teacher AI that generates easy, highly-visual 9th-grade educational projects (perfect for A4 printing or Word pasting) with Hindi word meanings, diagrams, mnemonics, and interactive infographics.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
