@@ -4,20 +4,14 @@ import {
   Moon, 
   BookOpen, 
   Sparkles, 
-  User, 
-  Settings, 
   PlusCircle, 
   Lightbulb, 
   GraduationCap, 
-  CheckCircle2, 
   AlertCircle, 
-  HelpCircle,
-  FileText,
   ChevronRight,
-  Eye,
   Settings2
 } from "lucide-react";
-import { PresetData, ChapterPreset, LessonProject, FontSize, StudentProfile, ProjectType } from "./types";
+import { PresetData, FontSize, StudentProfile, ProjectType, LessonProject } from "./types";
 import { A4ProjectDocument } from "./components/A4ProjectDocument";
 import { SAMPLE_GRAVITATION_PROJECT } from "./data/mockExample";
 
@@ -226,54 +220,60 @@ export default function App() {
     <div className={`min-h-screen font-sans ${getThemeClass()} transition-colors duration-300`}>
       
       {/* ================= REUSABLE NAVIGATION RAIL ================= */}
-      <header className="border-b border-gray-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 sticky top-0 z-40 backdrop-blur no-print px-4 py-3.5 shadow-sm">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
+      <header className="border-b border-gray-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 sticky top-0 z-40 backdrop-blur no-print px-4 py-3 shadow-sm">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row gap-3 sm:items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="bg-emerald-600 text-white p-2.5 rounded-xl shadow-md shadow-emerald-600/30">
-              <GraduationCap size={24} className="stroke-2" />
+            <div className="bg-emerald-600 text-white p-2 md:p-2.5 rounded-xl shadow-md shadow-emerald-600/30 shrink-0">
+              <GraduationCap size={22} className="stroke-2 md:w-6 md:h-6" />
             </div>
             <div>
-              <h1 className="text-lg md:text-xl font-bold tracking-tight text-emerald-700 dark:text-emerald-400">
-                GuruJi AI <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/75 text-emerald-800 dark:text-emerald-300 ml-1.5 align-middle">2026 Edition</span>
+              <h1 className="text-base md:text-lg font-bold tracking-tight text-emerald-700 dark:text-emerald-400 flex items-center gap-1.5 flex-wrap">
+                GuruJi AI 
+                <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/75 text-emerald-800 dark:text-emerald-300 ml-1.5">
+                  2026 Edition
+                </span>
               </h1>
               <p className="text-[10px] md:text-xs text-gray-500 dark:text-gray-400 font-medium">9th Class Outstanding Teacher & Printable A4 Project Architect</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2.5">
-            {/* Day/Night Selector */}
-            <button
-              onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-              className="p-2 rounded-xl bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 border border-transparent dark:border-slate-700/50 text-gray-700 dark:text-gray-300 transition-all cursor-pointer"
-              title="Toggle Day/Night View"
-              id="theme-toggler"
-            >
-              {theme === "light" ? <Moon size={20} className="fill-indigo-50/50" /> : <Sun size={20} className="text-amber-400 fill-amber-400/20" />}
-            </button>
+          <div className="flex items-center justify-between sm:justify-end gap-2.5 w-full sm:w-auto border-t sm:border-t-0 border-gray-100 dark:border-slate-800 pt-2 sm:pt-0">
+            <span className="text-[10px] font-bold text-gray-400 sm:hidden uppercase tracking-wider">App Settings (सेटिंग्स):</span>
+            <div className="flex items-center gap-2">
+              {/* Day/Night Selector */}
+              <button
+                onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+                className="p-2 rounded-xl bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 border border-transparent dark:border-slate-700/50 text-gray-700 dark:text-gray-300 transition-all cursor-pointer"
+                title="Toggle Day/Night View"
+                id="theme-toggler"
+              >
+                {theme === "light" ? <Moon size={18} className="fill-indigo-50/50" /> : <Sun size={18} className="text-amber-400 fill-amber-400/20" />}
+              </button>
 
-            {/* Typography Sizer Selector */}
-            <div className="flex items-center bg-gray-100 dark:bg-slate-800 rounded-xl p-1 border border-transparent dark:border-slate-700/50">
-              <button
-                onClick={() => setFontSize("normal")}
-                className={`px-2.5 py-1 text-xs font-bold rounded-lg transition-all cursor-pointer ${fontSize === "normal" ? "bg-white dark:bg-slate-705 bg-emerald-600 text-white shadow-sm" : "text-gray-600 dark:text-gray-400 hover:text-gray-800"}`}
-                title="Normal Font Size"
-              >
-                1x
-              </button>
-              <button
-                onClick={() => setFontSize("large")}
-                className={`px-2.5 py-1 text-xs font-bold rounded-lg transition-all cursor-pointer ${fontSize === "large" ? "bg-white dark:bg-slate-705 bg-emerald-600 text-white shadow-sm" : "text-gray-600 dark:text-gray-400 hover:text-gray-800"}`}
-                title="Large Font Size"
-              >
-                1.5x
-              </button>
-              <button
-                onClick={() => setFontSize("extra-large")}
-                className={`px-2 py-1 text-xs font-bold rounded-lg transition-all cursor-pointer ${fontSize === "extra-large" ? "bg-white dark:bg-slate-705 bg-emerald-600 text-white shadow-sm" : "text-gray-600 dark:text-gray-400 hover:text-gray-800"}`}
-                title="Extra Large Font Size"
-              >
-                2x
-              </button>
+              {/* Typography Sizer Selector */}
+              <div className="flex items-center bg-gray-100 dark:bg-slate-800 rounded-xl p-1 border border-transparent dark:border-slate-700/50">
+                <button
+                  onClick={() => setFontSize("normal")}
+                  className={`px-2.5 py-1 text-xs font-bold rounded-lg transition-all cursor-pointer ${fontSize === "normal" ? "bg-emerald-600 text-white shadow-sm" : "text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-205"}`}
+                  title="Normal Font Size"
+                >
+                  1x
+                </button>
+                <button
+                  onClick={() => setFontSize("large")}
+                  className={`px-2.5 py-1 text-xs font-bold rounded-lg transition-all cursor-pointer ${fontSize === "large" ? "bg-emerald-600 text-white shadow-sm" : "text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-205"}`}
+                  title="Large Font Size"
+                >
+                  1.5x
+                </button>
+                <button
+                  onClick={() => setFontSize("extra-large")}
+                  className={`px-2 py-1 text-xs font-bold rounded-lg transition-all cursor-pointer ${fontSize === "extra-large" ? "bg-emerald-600 text-white shadow-sm" : "text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-205"}`}
+                  title="Extra Large Font Size"
+                >
+                  2x
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -392,7 +392,7 @@ export default function App() {
                       onClick={() => setSelectedProfile(prof.id as StudentProfile)}
                       className={`w-full text-left p-3 rounded-xl border transition-all active:scale-[0.99] flex items-start gap-3 cursor-pointer ${
                         isSel
-                          ? "bg-slate-550 border-emerald-500 bg-emerald-50/40 dark:bg-emerald-950/20 text-slate-800 dark:text-slate-100 font-medium scale-[1.01]"
+                          ? "border-emerald-500 bg-emerald-50/40 dark:bg-emerald-950/20 text-slate-800 dark:text-slate-100 font-medium scale-[1.01]"
                           : "border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
                       }`}
                     >
@@ -412,7 +412,7 @@ export default function App() {
               <label className="text-xs uppercase font-extrabold tracking-wider text-slate-500 dark:text-slate-400 block mb-2">
                 4. Select Project Portfolio Format (प्रोजेक्ट प्रारुप)
               </label>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 min-[420px]:grid-cols-2 gap-2">
                 {[
                   "Full Study Folder",
                   "Compact Cheat-Sheet",
@@ -479,7 +479,7 @@ export default function App() {
         </section>
 
         {/* RIGHT COLUMN: PREVIEW OF THE GENERATED A4 PAPER/WORD FILE */}
-        <section className="lg:col-span-7 flex flex-col items-center">
+        <section className="lg:col-span-7 flex flex-col items-center w-full">
           
           {/* Active loader rendering */}
           {loading && (
@@ -495,7 +495,7 @@ export default function App() {
               <h3 className="text-base md:text-lg font-bold text-slate-850 dark:text-slate-100">
                 Teacher GuruJi is composing your project...
               </h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mt-2">
+              <p className="text-xs text-slate-500 dark:text-gray-400 max-w-sm mt-2">
                 Applying advanced pedagogical routines tailored to 9th-grade mental models.
               </p>
               

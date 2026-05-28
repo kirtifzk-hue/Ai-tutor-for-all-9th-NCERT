@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { LessonProject, FontSize } from "../types";
-import { BookOpen, Award, Layers, HelpCircle, Puzzle, Heart, Printer, Copy, CheckCircle2, RefreshCw, Eye, Sparkles, Download, FileText } from "lucide-react";
+import { BookOpen, Award, Layers, HelpCircle, Puzzle, Heart, Printer, Copy, CheckCircle2, RefreshCw, Eye, Sparkles, Download, FileText, FileCode } from "lucide-react";
 
 const prepareSvgForExport = (svgString: string, targetWidth: number = 550): string => {
   let width = targetWidth;
@@ -352,6 +352,635 @@ export function A4ProjectDocument({ project, fontSize, theme }: Props) {
     URL.revokeObjectURL(url);
   };
 
+  const handleDownloadHTML = () => {
+    // Generate styled HTML string 
+    let htmlContent = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${project.title} - GuruJi Classrooms</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #059669;
+      --primary-hover: #047857;
+      --primary-subtle: #ecfdf5;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --border: #e2e8f0;
+      --indigo: #4f46e5;
+      --indigo-subtle: #e0e7ff;
+      --rose: #e11d48;
+      --rose-subtle: #ffe4e6;
+      --amber: #d97706;
+      --amber-subtle: #fef3c7;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 840px;
+      margin: 0 auto;
+    }
+
+    .project-card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+      padding: 50px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Decorative border trim */
+    .project-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 6px;
+      background: linear-gradient(90deg, var(--primary), var(--indigo));
+    }
+
+    .badge-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 6px 14px;
+      border-radius: 100px;
+    }
+
+    .badge-primary {
+      background-color: var(--primary-subtle);
+      color: var(--primary-hover);
+    }
+
+    .badge-indigo {
+      background-color: var(--indigo-subtle);
+      color: var(--indigo);
+    }
+
+    h1 {
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      color: #0f172a;
+      line-height: 1.25;
+      margin-bottom: 25px;
+    }
+
+    h2 {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--primary-hover);
+      margin-top: 40px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 8px;
+    }
+
+    h3 {
+      font-size: 16px;
+      font-weight: 600;
+      color: #0f172a;
+      margin-top: 24px;
+      margin-bottom: 12px;
+    }
+
+    p {
+      color: var(--text-muted);
+      font-size: 15px;
+      margin-bottom: 16px;
+    }
+
+    .student-info {
+      background-color: #f1f5f9;
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 35px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      font-size: 14px;
+      border: 1px dashed #cbd5e1;
+    }
+
+    @media (max-width: 600px) {
+      .student-info {
+        grid-template-columns: 1fr;
+      }
+      .project-card {
+        padding: 24px;
+      }
+    }
+
+    .info-item strong {
+      color: var(--text);
+    }
+
+    .info-item span {
+      display: block;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .box {
+      margin-bottom: 25px;
+      padding: 24px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+    }
+
+    .box-analogy {
+      background-color: var(--primary-subtle);
+      border-color: #a7f3d0;
+      border-left: 6px solid var(--primary);
+    }
+
+    .box-analogy h3 {
+      color: var(--primary-hover);
+      margin-top: 0;
+    }
+
+    .box-concept {
+      background-color: #ffffff;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+
+    .box-concept h3 {
+      color: var(--primary-hover);
+      margin-top: 0;
+    }
+
+    .key-formula {
+      background-color: var(--indigo-subtle);
+      color: var(--indigo);
+      border-radius: 12px;
+      padding: 16px;
+      font-size: 13.5px;
+      margin-top: 14px;
+      font-family: 'JetBrains Mono', monospace;
+      border-left: 4px solid var(--indigo);
+    }
+
+    .box-diagram {
+      background-color: #f8fafc;
+      text-align: center;
+    }
+
+    .svg-container {
+      background-color: #ffffff;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      padding: 24px;
+      margin: 16px 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      max-width: 100%;
+      overflow-x: auto;
+    }
+
+    .svg-container svg {
+      max-width: 100%;
+      height: auto;
+    }
+
+    .box-mnemonic {
+      background-color: var(--rose-subtle);
+      border-color: #fecdd3;
+      border-left: 6px solid var(--rose);
+    }
+
+    .box-mnemonic h3 {
+      color: var(--rose);
+      margin-top: 0;
+    }
+
+    .mnemonic-pattern {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      color: #7f1d1d;
+      background-color: #ffe4e6;
+      border: 1px dashed #fca5a5;
+      padding: 12px;
+      border-radius: 8px;
+      margin: 10px 0;
+    }
+
+    .alert-banner {
+      background-color: var(--amber-subtle);
+      border: 1px solid #fde047;
+      color: #92400e;
+      border-radius: 16px;
+      padding: 20px;
+      font-style: italic;
+      font-size: 14.5px;
+      margin-bottom: 25px;
+    }
+
+    ul, ol {
+      margin-left: 20px;
+      margin-bottom: 16px;
+      color: var(--text-muted);
+      font-size: 14.5px;
+    }
+
+    li {
+      margin-bottom: 8px;
+    }
+
+    .quiz-card {
+      background-color: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+
+    .quiz-question {
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 12px;
+      font-size: 15px;
+    }
+
+    .quiz-options {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .quiz-option {
+      background-color: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-size: 14px;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.2s;
+      outline: none;
+    }
+
+    .quiz-option:hover {
+      background-color: #f1f5f9;
+      border-color: #cbd5e1;
+    }
+
+    .quiz-option.correct {
+      background-color: #d1fae5;
+      border-color: #34d399;
+      color: #065f46;
+      font-weight: 600;
+    }
+
+    .quiz-option.incorrect {
+      background-color: #fee2e2;
+      border-color: #fca5a5;
+      color: #991b1b;
+    }
+
+    .quiz-explanation {
+      margin-top: 14px;
+      padding: 12px;
+      border-radius: 8px;
+      background-color: #f0fdf4;
+      border-left: 3px solid #10b981;
+      font-size: 13.5px;
+      color: #166534;
+      display: none;
+    }
+
+    .bracket-word {
+      color: var(--primary-hover);
+      font-weight: 600;
+      background-color: var(--primary-subtle);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    pre.dark-code {
+      background-color: #0f172a;
+      color: #f1f5f9;
+      border-radius: 16px;
+      padding: 24px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13.5px;
+      line-height: 1.5;
+      overflow-x: auto;
+      border: 1px solid #1e293b;
+    }
+
+    .signature-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 50px;
+      margin-top: 50px;
+      padding-top: 30px;
+      border-top: 2px dashed var(--border);
+    }
+
+    .signature-box {
+      text-align: center;
+    }
+
+    .signature-line {
+      height: 40px;
+      margin-bottom: 8px;
+    }
+
+    .signature-role {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border);
+      padding-top: 8px;
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 40px;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="project-card">
+      <div class="badge-bar">
+        <span class="badge badge-primary">Subject: ${project.subject}</span>
+        <span class="badge badge-indigo">Chapter: ${project.chapter}</span>
+        <span class="badge badge-indigo">9th Standard CBSE / ICSE</span>
+      </div>
+
+      <h1>${project.title}</h1>
+
+      <div class="student-info">
+        <div class="info-item">
+          <strong>Student Name (छात्र):</strong>
+          <span>${studentName}</span>
+        </div>
+        <div class="info-item">
+          <strong>School Name (विद्यालय):</strong>
+          <span>${schoolName}</span>
+        </div>
+        <div class="info-item">
+          <strong>Academic Pedagogy Focus:</strong>
+          <span>GuruJi AI Teacher Edition</span>
+        </div>
+        <div class="info-item">
+          <strong>Tuning Profile Strategy:</strong>
+          <span>${project.targetStudentProfile}</span>
+        </div>
+      </div>
+
+      <h2>1. Chapter Prologue (अध्याय भूमिका)</h2>
+      <p>${project.introduction}</p>
+
+      <h2>2. Everyday Analogy (दैनिक जीवन से तुलना)</h2>
+      <div class="box box-analogy">
+        <h3>Memory Analogy: ${project.analogy.title}</h3>
+        <p style="font-style: italic; margin-top: 8px; color: var(--text);">"${project.analogy.scenarioDescription}"</p>
+        <p style="margin-top: 12px; margin-bottom: 0;"><strong>How it relates academic theory:</strong> ${project.analogy.howItRelates}</p>
+      </div>
+
+      <h2>3. Academic Core Pillars (अध्याय के वैचारिक स्तंभ)</h2>
+    `;
+
+    // 1. Loop Concepts
+    project.mainCoreConcepts.forEach((c, idx) => {
+      htmlContent += `
+      <div class="box box-concept">
+        <h3>${idx + 1}. ${c.conceptName}</h3>
+        <p>${c.explanation}</p>
+        ${c.keyFormulaOrDetail ? `
+        <div class="key-formula">
+          <strong>💡 Landmark Formula or Key Element Detail:</strong><br/>
+          ${c.keyFormulaOrDetail.replace(/\n/g, '<br/>')}
+        </div>
+        ` : ''}
+      </div>
+      `;
+    });
+
+    // 2. Loop Diagrams
+    if (project.diagrams && project.diagrams.length > 0) {
+      htmlContent += `<h2>4. SVG Visual Diagrams & Prototyping (चित्र व आरेख)</h2>`;
+      project.diagrams.forEach((diag, index) => {
+        const processedSvg = prepareSvgForExport(diag.svgSourceCode, 540);
+        htmlContent += `
+        <div class="box box-diagram">
+          <h3 style="margin-top: 0; color: var(--primary-hover);">Diagram ${index + 1}: ${diag.diagramTitle}</h3>
+          <p style="font-style: italic; font-size: 13.5px; margin-bottom: 12px;">${diag.descriptionOfVisual}</p>
+          <div class="svg-container">
+            ${processedSvg}
+          </div>
+          ${diag.editorTipsForWord ? `
+          <div class="key-formula" style="background-color: #ecfeff; border-left: 4px solid #06b6d4; color: #0891b2; text-align: left;">
+            <strong>📝 Tip for student portfolio:</strong> ${diag.editorTipsForWord}
+          </div>
+          ` : ''}
+        </div>
+        `;
+      });
+    }
+
+    // 3. Loop Mnemonics
+    htmlContent += `<h2>5. Magical Mnemonics (याद रखने की जादुई तरकीबें)</h2>`;
+    project.mnemonics.forEach((m) => {
+      htmlContent += `
+      <div class="box box-mnemonic">
+        <h3>Shortcut Code: ${m.shortcutCode}</h3>
+        <div class="mnemonic-pattern">${m.expansion.replace(/\n/g, '<br/>')}</div>
+        <p style="margin-bottom: 0; font-size: 13.5px;"><strong>How it works:</strong> ${m.howItWorksInstructions}</p>
+      </div>
+      `;
+    });
+
+    // 4. Practical task details
+    htmlContent += `
+      <h2>6. Infographic Poster Layout Guide (पोस्टर चार्ट निर्देश)</h2>
+      <div class="alert-banner">
+        <strong>🎨 Teacher's Layout Strategy for Poster Work:</strong><br/><br/>
+        ${project.beautifulInfographicText}
+      </div>
+
+      <h2>7. Hand-made Project Activity (करके सीखें: मुख्य गतिविधि)</h2>
+      <div class="box" style="border-left: 6px solid #10b981; background-color: #fcfdfd;">
+        <h3 style="color: var(--primary-hover); margin-top: 0;">Project Topic: ${project.practicalProjectActivity.projectName}</h3>
+        <h4 style="margin: 15px 0 6px 0; color: #1e293b; font-size: 14px;">📦 Base Materials Needed (आवश्यक वस्तुएं):</h4>
+        <ul style="margin-bottom: 15px;">
+    `;
+
+    project.practicalProjectActivity.materialNeeded.forEach((mat) => {
+      htmlContent += `<li>${mat}</li>`;
+    });
+
+    htmlContent += `
+        </ul>
+        <h4 style="margin: 15px 0 6px 0; color: #1e293b; font-size: 14px;">⚙️ Implementation Steps (चरण-दर-चरण निर्देश):</h4>
+        <ol style="margin-bottom: 15px;">
+    `;
+
+    project.practicalProjectActivity.stepByStepGuide.forEach((step) => {
+      htmlContent += `<li>${step}</li>`;
+    });
+
+    htmlContent += `
+        </ol>
+        <p><strong>Expected Scientific Outbreak (वैज्ञानिक परिणाम):</strong> ${project.practicalProjectActivity.expectedObservation}</p>
+        <div class="key-formula" style="background-color: var(--primary-subtle); color: var(--primary-hover); border-left-color: var(--primary)">
+          <strong>✍️ Workbook Question to Solve:</strong> ${project.practicalProjectActivity.submissionQuestionWithHInt}
+        </div>
+      </div>
+
+      <h2>8. Interactive Knowledge Check (मस्तिष्क चुनौती)</h2>
+    `;
+
+    // 5. Active Recall interactive Quiz!
+    project.activeRecallQuiz.forEach((quiz, idx) => {
+      htmlContent += `
+      <div class="quiz-card" id="quiz-${idx}">
+        <div class="quiz-question">Question ${idx + 1}: ${quiz.question}</div>
+        <div class="quiz-options">
+      `;
+
+      quiz.options.forEach((opt, optIdx) => {
+        htmlContent += `
+          <button class="quiz-option" onclick="checkAnswer(${idx}, ${optIdx}, ${quiz.correctOptionIndex})">
+            ${opt}
+          </button>
+        `;
+      });
+
+      htmlContent += `
+        </div>
+        <div class="quiz-explanation" id="explanation-${idx}">
+          <strong>💡 GuruJi Evaluation Analysis:</strong> ${quiz.funExplanationAndHint}
+        </div>
+      </div>
+      `;
+    });
+
+    htmlContent += `
+      <h2>9. Quick Summary Flashcard (त्वरित पुनरावृत्ति कार्ड)</h2>
+      <pre class="dark-code">${project.quickSummaryRevisionCard}</pre>
+
+      <div class="signature-grid">
+        <div class="signature-box">
+          <div class="signature-line"></div>
+          <p class="signature-role">Student Signature (छात्र के हस्ताक्षर)</p>
+        </div>
+        <div class="signature-box">
+          <div class="signature-line" style="font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: bold; color: var(--primary); display: flex; align-items: flex-end; justify-content: center;">GuruJi AI Teacher Approved</div>
+          <p class="signature-role">Teacher Evaluator (शिक्षक मूल्यांकन)</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p>© 2026 GuruJi AI Classrooms. Designed with award-winning CBSE & ICSE pedagogical routines.</p>
+    <p style="margin-top: 5px; font-size: 11px;">Downloaded as portable standalone, interactive web document.</p>
+  </div>
+
+  <script>
+    function checkAnswer(quizIdx, selectedIdx, correctIdx) {
+      const card = document.getElementById('quiz-' + quizIdx);
+      const options = card.getElementsByClassName('quiz-option');
+      const explanation = document.getElementById('explanation-' + quizIdx);
+      
+      // Disable further clicks
+      for(let i = 0; i < options.length; i++) {
+        options[i].disabled = true;
+        if (i === correctIdx) {
+          options[i].classList.add('correct');
+        } else if (i === selectedIdx && selectedIdx !== correctIdx) {
+          options[i].classList.add('incorrect');
+        }
+      }
+      
+      // Show explanation
+      explanation.style.display = 'block';
+    }
+
+    // Apply soft highlights to bracket translations: "Force (बल)" -> "Force <span class='bracket-word'>(बल)</span>"
+    document.addEventListener("DOMContentLoaded", function() {
+      const walker = document.createTreeWalker(
+        document.body, 
+        NodeFilter.SHOW_TEXT, 
+        null, 
+        false
+      );
+      
+      let node;
+      const nodesToReplace = [];
+      while(node = walker.nextNode()) {
+        const parent = node.parentNode;
+        if (parent && parent.tagName !== 'SCRIPT' && parent.tagName !== 'STYLE' && parent.tagName !== 'PRE' && parent.tagName !== 'TEXTAREA') {
+          if (/\\([^)]+\\)/.test(node.nodeValue)) {
+            nodesToReplace.push(node);
+          }
+        }
+      }
+
+      nodesToReplace.forEach(textNode => {
+        const text = textNode.nodeValue;
+        const tempSpan = document.createElement("span");
+        tempSpan.innerHTML = text.replace(/(\\([^)]+\\))/g, "<span class='bracket-word'>$1</span>");
+        textNode.parentNode.replaceChild(tempSpan, textNode);
+      });
+    });
+  </script>
+</body>
+</html>`;
+
+    const blob = new Blob([htmlContent], { type: "text/html;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    const sanitizedTitle = project.chapter.replace(/[^a-zA-Z0-9]/g, "_");
+    a.download = `${sanitizedTitle}_GurujiProject_Interactive.html`;
+    document.body.appendChild(a);
+    a.click();
+    
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   const handleCopyText = () => {
     // Generate clean copy text with simple format
     let cleanText = `PROJECT REPORT: ${project.title}\n`;
@@ -556,7 +1185,7 @@ export function A4ProjectDocument({ project, fontSize, theme }: Props) {
       )}
 
       {/* Action panel at top */}
-      <div className="w-full max-w-4xl bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700/60 shadow-lg rounded-2xl p-4 mb-6 flex flex-wrap items-center justify-between gap-4 no-print print:hidden">
+      <div className="w-full max-w-4xl bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700/60 shadow-lg rounded-2xl p-4 mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4 no-print print:hidden">
         <div className="flex items-center gap-3">
           <span className="relative flex h-3 w-3">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -566,10 +1195,10 @@ export function A4ProjectDocument({ project, fontSize, theme }: Props) {
             Project generated with <strong className="text-emerald-600 dark:text-emerald-400">Award-winning Teaching Pedagogy</strong>!
           </p>
         </div>
-        <div className="flex items-center flex-wrap gap-2">
+        <div className="flex items-center flex-wrap gap-2 w-full md:w-auto justify-stretch md:justify-end">
           <button
             onClick={handleCopyText}
-            className="flex items-center gap-1.5 px-3 py-2 text-xs md:text-sm font-semibold rounded-lg bg-gray-100 dark:bg-slate-700 text-gray-800 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-slate-600 active:scale-95 transition-all cursor-pointer"
+            className="flex-1 md:flex-initial flex items-center justify-center gap-1.5 px-3 py-2 text-xs md:text-sm font-semibold rounded-lg bg-gray-100 dark:bg-slate-700 text-gray-800 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-slate-600 active:scale-95 transition-all cursor-pointer"
           >
             {copied ? (
               <>
@@ -586,16 +1215,24 @@ export function A4ProjectDocument({ project, fontSize, theme }: Props) {
 
           <button
             onClick={handleDownloadWord}
-            className="flex items-center gap-1.5 px-3.5 py-2 text-xs md:text-sm font-semibold rounded-lg bg-indigo-600 hover:bg-indigo-505 text-white bg-indigo-600 hover:bg-indigo-500 shadow shadow-indigo-600/20 active:scale-95 transition-all cursor-pointer"
+            className="flex-1 md:flex-initial flex items-center justify-center gap-1.5 px-3.5 py-2 text-xs md:text-sm font-semibold rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white shadow shadow-indigo-600/20 active:scale-95 transition-all cursor-pointer"
           >
             <Download size={15} />
             <span>Word File (.doc)</span>
           </button>
 
           <button
+            onClick={handleDownloadHTML}
+            className="flex-1 md:flex-initial flex items-center justify-center gap-1.5 px-3.5 py-2 text-xs md:text-sm font-semibold rounded-lg bg-teal-600 hover:bg-teal-500 text-white shadow shadow-teal-600/20 hover:shadow-teal-500/30 active:scale-95 transition-all cursor-pointer"
+          >
+            <FileCode size={15} />
+            <span>Interactive HTML</span>
+          </button>
+
+          <button
             onClick={handleDownloadPDFDirect}
             disabled={exportingPdf}
-            className="flex items-center gap-1.5 px-3.5 py-2 text-xs md:text-sm font-semibold rounded-lg bg-rose-600 hover:bg-rose-500 text-white shadow shadow-rose-600/20 hover:shadow-rose-500/30 active:scale-95 transition-all cursor-pointer disabled:opacity-60"
+            className="flex-1 md:flex-initial flex items-center justify-center gap-1.5 px-3.5 py-2 text-xs md:text-sm font-semibold rounded-lg bg-rose-600 hover:bg-rose-500 text-white shadow shadow-rose-600/20 hover:shadow-rose-500/30 active:scale-95 transition-all cursor-pointer disabled:opacity-60"
           >
             {exportingPdf ? (
               <>
@@ -612,7 +1249,7 @@ export function A4ProjectDocument({ project, fontSize, theme }: Props) {
 
           <button
             onClick={handlePrint}
-            className="flex items-center gap-1.5 px-3.5 py-2 text-xs md:text-sm font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white shadow shadow-emerald-600/20 hover:shadow-emerald-500/30 active:scale-95 transition-all cursor-pointer"
+            className="flex-1 md:flex-initial flex items-center justify-center gap-1.5 px-3.5 py-2 text-xs md:text-sm font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white shadow shadow-emerald-600/20 hover:shadow-emerald-500/30 active:scale-95 transition-all cursor-pointer"
           >
             <Printer size={15} />
             <span>Print A4</span>
@@ -692,7 +1329,7 @@ export function A4ProjectDocument({ project, fontSize, theme }: Props) {
       {/* Simulated physical A4 sheet wrapper */}
       <div 
         id="a4-printable-area" 
-        className={`w-full max-w-[800px] min-h-[1130px] bg-white dark:bg-slate-900 border-2 border-emerald-500/30 dark:border-emerald-500/20 shadow-2xl p-6 md:p-12 font-sans text-gray-900 rounded-2xl relative transition-all duration-300 print:border-none print:shadow-none print:p-0 print:m-0 print:max-w-full`}
+        className={`w-full max-w-[800px] min-h-[1130px] bg-white dark:bg-slate-900 border-2 border-emerald-500/30 dark:border-emerald-500/20 shadow-2xl p-4 xs:p-6 sm:p-8 md:p-12 font-sans text-gray-900 rounded-2xl relative transition-all duration-300 print:border-none print:shadow-none print:p-0 print:m-0 print:max-w-full`}
         style={{
           boxSizing: "border-box",
         }}
@@ -701,7 +1338,7 @@ export function A4ProjectDocument({ project, fontSize, theme }: Props) {
         <div className="absolute top-4 left-4 right-4 bottom-4 border border-emerald-500/10 dark:border-emerald-500/10 pointer-events-none rounded-lg print:border-green-800/10"></div>
         
         {/* Decorative Badge on Simulated A4 */}
-        <div className="flex justify-between items-start border-b-2 border-slate-100 dark:border-slate-800 pb-6 mb-8">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b-2 border-slate-100 dark:border-slate-800 pb-6 mb-8">
           <div>
             <h4 className="text-xs uppercase font-bold tracking-widest text-emerald-600 dark:text-emerald-400 font-mono">
               9TH CLASS CBSE/ICSE PORTFOLIO (९वीं कक्षा प्रोजेक्ट)
@@ -862,9 +1499,9 @@ export function A4ProjectDocument({ project, fontSize, theme }: Props) {
                   </p>
                   
                   {/* Standalone raw SVG Render */}
-                  <div className="w-full flex justify-center mb-4 max-h-[300px]">
+                  <div className="w-full flex justify-center mb-4 max-h-[300px] overflow-hidden">
                     <div 
-                      className="w-full max-w-[500px]"
+                      className="w-full max-w-[500px] [&_svg]:max-w-full [&_svg]:h-auto [&_svg]:mx-auto"
                       dangerouslySetInnerHTML={{ __html: diag.svgSourceCode }}
                     />
                   </div>
